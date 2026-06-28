@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: learnforge-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret123
+
+  backend:
+    build: .
+    container_name: learnforge-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:secret123@mongodb:27017/learnforge?authSource=admin
+    depends_on:
+      - mongodb
+    volumes:
+      - ./uploads:/app/uploads
+
+volumes:
+  mongodb_data:
